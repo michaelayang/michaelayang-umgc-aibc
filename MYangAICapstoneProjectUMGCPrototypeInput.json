@@ -1,0 +1,43 @@
+[
+{
+  "num_candidate_answers":  10,
+  "retry_max_times": 10,
+  "problems":  [
+  { "problem":  "4 * 25",
+    "answer":  "100",
+    "related_problems":  [ { "problem":  "How many quarters are in a dollar",
+                             "answer":  4
+                           }
+                         ]
+  },
+  { "problem":  "4 * 250",
+    "answer":  "1000",
+    "related_problems":  [ { "problem":  "4 * 25",
+                             "answer":  100
+                           }
+                         ]
+  },
+  { "problem":  "1000 / 4",
+    "answer":  "250",
+    "related_problems":  [ { "problem":  "4 * 250",
+                             "answer":  1000
+                           }
+                         ]
+  },
+  { "problem":  "996 / 4",
+    "answer":  "249",
+    "related_problems":  [ { "problem":  "1000 / 4",
+                             "answer":  250
+                           }
+                         ],
+    "related_properties": [ { "property":  "distributive",
+                              "usage":  "996 / 4 = (1000 - 4 ) / 4 = (1000 + (-4)) * (1/4) = (1000 * (1/4)) + ((-4) * (1/4)) = (1000 / 4) + (-4/4) = 250 - 1 = 249"
+                            }
+                          ],
+    "common_errors": [ { "error":  "996 / 4 = 6",
+                         "reasoning":  "9 + 9 + 6 = 24, 24 / 4 = 6" }
+                     ]
+  }
+  ]
+}
+]
