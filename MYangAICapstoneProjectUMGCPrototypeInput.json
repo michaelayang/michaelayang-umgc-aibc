@@ -13,9 +13,17 @@
   { "problem":  "4 * 250",
     "answer":  "1000",
     "related_problems":  [ { "problem":  "4 * 25",
-                             "answer":  100
+                             "answer": 100
+                           },
+                           { "problem":  "25 * 10",
+                             "answer": 250
                            }
-                         ]
+                         ],
+    "related_properties": [ { "property":  "associative",
+                              "usage":  "4 * (25 * 10) = (4 * 25) * 10"
+                            }
+                          ]
+
   },
   { "problem":  "1000 / 4",
     "answer":  "250",
