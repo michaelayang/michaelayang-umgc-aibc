@@ -1,7 +1,7 @@
 [
 {
-  "num_candidate_answers":  10,
-  "retry_max_times": 10,
+  "num_candidate_answers":  8,
+  "retry_max_times": 4,
   "problems":  [
   { "problem":  "4 * 25",
     "answer":  "100",
