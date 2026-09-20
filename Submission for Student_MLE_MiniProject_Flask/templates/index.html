@@ -19,7 +19,7 @@
     </form>
     <div class="chart-container">
         {% if chart_url %}
-            <iframe src={{ chart_url }} width=650 height=500 title="Bar Chart"></iframe>
+            <img src="data:image/png;base64,{{ chart_url }}" alt="Bar Chart">
         {% endif %}
     </div>
 </body>
