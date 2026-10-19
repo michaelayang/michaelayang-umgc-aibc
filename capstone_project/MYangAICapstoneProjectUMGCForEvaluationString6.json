@@ -1,0 +1,26 @@
+[
+{
+  "num_candidate_answers":  2,
+  "retry_max_times": 2,
+  "problems":  [
+  { "problem":  "7 * 8",
+    "answer":  "56"
+  },
+  { "problem":  "14 * 4",
+    "answer":  "56"
+  },
+  { "problem":  "7 * 9",
+    "answer":  "63"
+  },
+  { "problem":  "21 * 3",
+    "answer":  "63"
+  },
+  { "problem":  "7 * 17",
+    "answer":  "119",
+    "related_properties": [ { "property":  "distributive",
+                              "usage":  "56 + 63 = (7 * 8) + (7 * 9) = 7 * (8 + 9) = 7 * 17 = 119" }
+                          ]
+  }
+  ]
+}
+]

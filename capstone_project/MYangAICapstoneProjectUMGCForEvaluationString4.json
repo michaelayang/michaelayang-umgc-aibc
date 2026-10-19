@@ -1,0 +1,29 @@
+[
+{
+  "num_candidate_answers":  2,
+  "retry_max_times": 2,
+  "problems":  [
+  { "problem":  "108 - 12",
+    "answer":  "96"
+  },
+  { "problem":  "12 - 108",
+    "answer":  "-96"
+  },
+  { "problem":  "108 - 22",
+    "answer":  "86"
+  },
+  { "problem":  "183 - 54",
+    "answer":  "129"
+  },
+  { "problem":  "54 - 183",
+    "answer":  "-129"
+  },
+  { "problem":  "21,054 - 21,183",
+    "answer":  "-129",
+    "related_properties": [ { "property":  "Adding the same number 21,000, to two different numbers, does not change the absolute difference between the two different numbers.",
+                              "usage":  "21,054 - 21,183 = (21,000 + 54) - (21,000 + 183) = 21,000 - 21,000 + 54 - 183 = 0 + 54 - 183 = 54 - 183 = -129" }
+                          ]
+  }
+  ]
+}
+]
