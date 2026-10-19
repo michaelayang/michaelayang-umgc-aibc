@@ -1,0 +1,28 @@
+[
+{
+  "num_candidate_answers":  2,
+  "retry_max_times": 2,
+  "problems":  [
+  { "problem":  "10 * 15",
+    "answer":  "150"
+  },
+  { "problem":  "20 * 15",
+    "answer":  "300"
+  },
+  { "problem":  "2 * 15",
+    "answer":  "30"
+  },
+  { "problem":  "1 * 15",
+    "answer":  "15"
+  },
+  { "problem":  "495 / 15",
+    "answer":  "33",
+    "related_properties": [ { "property":  "distributive",
+                              "usage":  "(10 + 20 + 2 + 1) * 15 = (10 * 15) + (20 * 15) + (2 * 15) + (1 * 15) = 150 + 300 + 30 + 15 = 495" },
+                            { "property":  "division is the inverse of multiplication",
+                              "usage":  "(10 + 20 + 2 + 1) * 15 = 33 * 15 = 495" }
+                          ]
+  }
+  ]
+}
+]

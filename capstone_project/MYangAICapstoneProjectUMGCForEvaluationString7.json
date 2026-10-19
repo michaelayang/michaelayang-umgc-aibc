@@ -1,0 +1,27 @@
+[
+{
+  "num_candidate_answers":  2,
+  "retry_max_times": 2,
+  "instructions": "Please answer as decimal numbers rounded to the nearest hundredth's place:",
+  "problems":  [
+  { "problem":  "720 / 960",
+    "answer":  "0.75"
+  },
+  { "problem":  "360 / 480",
+    "answer":  "0.75"
+  },
+  { "problem":  "36 / 48",
+    "answer":  "0.75"
+  },
+  { "problem":  "33 / 44",
+    "answer":  "0.75"
+  },
+  { "problem":  "3 / 4",
+    "answer":  "0.75",
+    "related_properties": [ { "property":  "scaling",
+                              "usage":  "720 / 960 = (3 * 240) / (4 * 240) = 3 / 4 = 0.75" }
+                          ]
+  }
+  ]
+}
+]

@@ -1,0 +1,41 @@
+[
+{
+  "num_candidate_answers":  2,
+  "retry_max_times": 2,
+  "problems":  [
+  { "problem":  "10 * 0.333...",
+    "answer":  "3.333..."
+  },
+  { "problem":  "3.333... - 0.333...",
+    "answer":  "3.0"
+  },
+  { "problem":  "9 * 0.333...",
+    "answer":  "3.0"
+  },
+  { "problem":  "3.0 / 9.0",
+    "answer":  "0.333..."
+  },
+  { "problem":  "1000 * 0.4858585...",
+    "answer":  "485.858585..."
+  },
+  { "problem":  "10 * 0.4858585...",
+    "answer":  "4.858585..."
+  },
+  { "problem":  "485.858585... - 4.858585...",
+    "answer":  "481.0"
+  },
+  { "problem":  "990 * 4.858585...",
+    "answer":  "481.0",
+    "related_properties": [ { "property":  "distributive",
+                              "usage":  "1000 * 0.4858585... = 485.858585..., 10 * 0.4858585... = 4.858585..., and (1000 * 0.4858585... - 10 * 0.4858585... = (1000 - 10) * 0.4858585... = 990 * 0.4858585... and 485.858585 - 4.858585 = 481.0" }
+                          ]
+  },
+  { "problem":  "481.0 / 990.0",
+    "answer":  "0.4858585...",
+    "related_properties": [ { "property":  "cancellation of repeating decimals between numbers",
+                              "usage":  "990.0 * 0.4858585... = 481.0, so 0.4858585... = 481.0/990.0" }
+                          ]
+  }
+  ]
+}
+]

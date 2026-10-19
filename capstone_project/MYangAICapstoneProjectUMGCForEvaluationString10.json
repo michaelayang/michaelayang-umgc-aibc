@@ -1,0 +1,32 @@
+[
+{
+  "num_candidate_answers":  2,
+  "retry_max_times": 2,
+  "problems":  [
+  { "problem":  "3 * 2",
+    "answer":  "6"
+  },
+  { "problem":  "7 * 4",
+    "answer":  "28"
+  },
+  { "problem":  "14 * 2",
+    "answer":  "28"
+  },
+  { "problem":  "0.14 * 2",
+    "answer":  "0.28"
+  },
+  { "problem":  "3.14 * 2",
+    "answer":  "6.28"
+  },
+  { "problem":  "3.14 * 0.2",
+    "answer":  "0.628"
+  },
+  { "problem":  "(314 / 1000) * (2/10)",
+    "answer":  "0.628",
+    "related_properties": [ { "property":  "division by powers of 10, and place values",
+                              "usage":  "(314 / 1000) * (2/10) = 3.14 * 0.2 = 0.628" }
+                          ]
+  }
+  ]
+}
+]

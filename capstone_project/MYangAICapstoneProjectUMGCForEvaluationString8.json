@@ -1,0 +1,26 @@
+[
+{
+  "num_candidate_answers":  2,
+  "retry_max_times": 2,
+  "problems":  [
+  { "problem":  "4 * 4",
+    "answer":  "16"
+  },
+  { "problem":  "400 * 40",
+    "answer":  "16000"
+  },
+  { "problem":  "3 * 4",
+    "answer":  "12"
+  },
+  { "problem":  "30 * 40",
+    "answer":  "1200"
+  },
+  { "problem":  "431 * 40",
+    "answer":  "17240",
+    "related_properties": [ { "property":  "distributive",
+                              "usage":  "431 * 40 = (400 * 40) + (30 * 40) + (1 * 40) = 16000 + 1200 + 40 = 17240" }
+                          ]
+  }
+  ]
+}
+]
