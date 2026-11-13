@@ -259,6 +259,9 @@ def student_reasoning_is_relevant_to_problem(text_attributes_from_problem, stude
   # Find similarities between student reasoning (and a list of previous student reasoning) and
   # teacher notes in the text_attributes_from_problem (that were read from the problem set .JSON file).
 
+  if (student_reasoning == "" or text_attributes_from_problem ==""):
+    return 0.0
+
   if (DEBUG_LEVEL > 0):
     print("student_reasoning:  %s" % student_reasoning)
     print("text_attributes_from_problem:  %s" % text_attributes_from_problem)
@@ -613,6 +616,9 @@ def vector_tip_distance(vector0, vector1):
 
 
 def get_problem_df(math_string_df):
+  if (DEBUG_LEVEL > 0):
+    print("session['math_string_df_index'] is %s, session['math_string_problem_index'] is %s" % (session['math_string_df_index'], session['math_string_problem_index']))
+
   math_problems = math_string_df.problems[0]
   math_problem_index = session['math_string_problem_index']
   math_problem = math_problems[math_problem_index]
@@ -684,18 +690,20 @@ def get_student_reasoning_2(math_string_df, student_response, chatgpt_output_cor
       print("get_student_reasoning_2():  student_response was correct!")
 
   if (not student_answer_is_correct):
+    session['student_tries'] += 1
     leading_question_from_chatgpt = chatgpt_api_supplies_leading_question(problem_df, session['student_answer'], session['student_reasoning'], session['num_candidate_answers'])
     student_reasoning_relevance_text = ""
     if (student_reasoning_is_relevant_to_problem(session['text_attributes_from_problem'], session['student_reasoning'])):
       student_reasoning_relevance_text = "Note: The reasoning you have provided was actually already along the lines of what the teacher was looking for.  "
     session['state_machine_state'] = 1
-    return ("What is %s ?" % problem_df['problem'][0], student_reasoning_relevance_text + leading_question_from_chatgpt)
+    return ("What is %s ?" % problem_df['problem'][0], "Clue:  " + student_reasoning_relevance_text + leading_question_from_chatgpt)
 
   if (student_reasoning_is_relevant_to_problem(session['text_attributes_from_problem'], session['student_reasoning'])):
     session['state_machine_state'] = 0
     session['math_string_problem_index'] += 1
     if (session['math_string_problem_index'] >= len(math_string_df.problems[0])):
       session['math_string_df_index'] += 1
+      session['math_string_problem_index'] = 0
     session['student_tries'] = -1
     return ("Your answer %s was correct!" % session['student_answer'], "Importantly, your reasoning was along the lines of what the teacher was looking for.")
 
@@ -709,20 +717,26 @@ def check_student_reasoning_3(math_string_df, student_response, chatgpt_output_c
   student_reasoning = student_response
 
   if (session['student_tries'] < session['retry_max_times']):
+    if (DEBUG_LEVEL > 0):
+      print("session['text_attributes_from_problem']:  %s, student_reasoning:  %s" % (session['text_attributes_from_problem'], student_reasoning))
+
     if (student_reasoning_is_relevant_to_problem(session['text_attributes_from_problem'], student_reasoning)):
       session['math_string_problem_index'] += 1 
       if (session['math_string_problem_index'] >= len(math_string_df.problems[0])):
         session['math_string_df_index'] += 1
+        session['math_string_problem_index'] = 0
       session['state_machine_state'] = 0
       session['student_tries'] = -1
       return ("You said:  %s" % student_reasoning, "Importantly, your reasoning was along the lines of what the teacher was looking for.")
     else:
       session['state_machine_state'] = 3
       session['student_tries'] += 1
-      return ("", "Please add other reasoning for your answer to this problem.")
+      return ("You said:  %s" % student_reasoning, "Please add other reasoning for your answer to this problem.")
 
-  session['math_string_df_index'] += 1 
-  session['math_string_problem_index'] = 0
+  session['math_string_problem_index'] += 1 
+  if (session['math_string_problem_index'] >= len(math_string_df.problems[0])):
+    session['math_string_df_index'] += 1
+    session['math_string_problem_index'] = 0
   session['state_machine_state'] = 0
   session['student_tries'] = -1
   return ("", "")
@@ -815,7 +829,11 @@ def index():
       # 4.  Say "thank you for the conversation" to the student and assure them that good elements of the math conversation
       #     have been recorded (logged) and will be passed to a human teacher for review.  Allow the student to sign off the session.
       #
-      math_chatbot_supplementary_text = "Thank you for having this math conversation!  Your responses will be reviewed by human teachers to help you to improve."
+      debug_thank_you_text = ""
+      #if (DEBUG_LEVEL > 0):
+      #  debug_thank_you_text = "session['math_string_df_index']:  " + str(session['math_string_df_index']) + ", len(math_string_dfs):  " + str(len(math_string_dfs)) + " "
+
+      math_chatbot_supplementary_text = debug_thank_you_text + "Thank you for having this math conversation!  Your responses will be reviewed by human teachers to help you to improve."
       show_student_response = False
       show_next_problem_button = False
 
@@ -874,8 +892,11 @@ def reset():
   session['math_string_problem_index'] = 0
   session['student_tries'] = 0
   session['initialized'] = True
+  
   math_chatbot_supplementary_text = ""
   math_string_index = 0
+  show_student_response = True
+  show_next_problem_button = False
 
   (math_chatbot_problem, math_chatbot_text) = state_machine_step(math_string_dfs[math_string_index], "", chatgpt_output_correlation_vector, perfect_correlation_vector)
 

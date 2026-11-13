@@ -31,6 +31,8 @@ COPY main.py /app/.
 COPY templates/index.html templates/.
 COPY static/styles.css static/.
 COPY MYangAICapstoneProjectUMGCPrototypeInput.json .
+COPY MYangAICapstoneProjectUMGCForEvaluationString5.json .
+
 
 # Make port 5000 available to the world outside this container
 EXPOSE 5000
