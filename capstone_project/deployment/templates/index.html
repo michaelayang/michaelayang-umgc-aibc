@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MYang Arithmetic Number Talk Chatbot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>MYang Arithmetic Number Talk Chatbot for UMGC AI Bootcamp</h1>
+    <div class="math-chatbot-problem">
+        {% if math_chatbot_problem %}
+            <label>{{ math_chatbot_problem }}</label>
+        {% endif %}
+    </div>
+    <div class="math-chatbot-text">
+        {% if math_chatbot_text %}
+            <label>{{ math_chatbot_text }}</label>
+        {% endif %}
+    </div>
+    <div class="student-input">
+      {% if show_student_response %}
+        <form method="POST" action="/">
+          <div>
+            <label for="values">Student Response:</label>
+            <input type="text" name="student_response" required>
+          </div>
+          <button type="submit">Submit Response</button>
+        </form>
+      {% endif %}
+      {% if show_next_problem_button %}
+        <form method="POST" action="/next">
+          <button type="submit">Next Problem</button>
+        </form>
+      {% endif %}
+    </div class="student-input">
+    <div class="math-chatbot-supplementary-text">
+        {% if math_chatbot_supplementary_text %}
+            <label>{{ math_chatbot_supplementary_text }}</label>
+        {% endif %}
+    </div>
+</body>
+</html>
