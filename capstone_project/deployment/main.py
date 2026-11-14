@@ -645,7 +645,6 @@ def get_student_answer_1(math_string_df, student_response, chatgpt_output_correl
 
   session['state_machine_state'] = 2
   session['student_answer'] = student_response
-  session['student_tries'] += 1
   session['text_attributes_from_problem'] = get_text_attributes_from_problem(problem_df)
 
   return ("Your problem answer was:  %s" % session['student_answer'], "And what is your reasoning for your answer?")
@@ -685,18 +684,28 @@ def get_student_reasoning_2(math_string_df, student_response, chatgpt_output_cor
 
       if (response.output_text[:3].lower() != "yes"):
         student_answer_is_correct = True
+        session['student_tries'] = 0
   else:
     student_answer_is_correct = True
+    session['student_tries'] = 0
     if (DEBUG_LEVEL > 0):
       print("get_student_reasoning_2():  student_response was correct!")
 
   if (not student_answer_is_correct):
-    leading_question_from_chatgpt = chatgpt_api_supplies_leading_question(problem_df, session['student_answer'], session['student_reasoning'], session['num_candidate_answers'])
-    student_reasoning_relevance_text = ""
-    if (student_reasoning_is_relevant_to_problem(session['text_attributes_from_problem'], session['student_reasoning'])):
-      student_reasoning_relevance_text = "Note: The reasoning you have provided was actually already along the lines of what the teacher was looking for.  "
-    session['state_machine_state'] = 1
-    return ("What is %s ?" % problem_df['problem'][0], "Clue:  " + student_reasoning_relevance_text + leading_question_from_chatgpt)
+    if (session['student_tries'] < session['retry_max_times']):
+      leading_question_from_chatgpt = chatgpt_api_supplies_leading_question(problem_df, session['student_answer'], session['student_reasoning'], session['num_candidate_answers'])
+      student_reasoning_relevance_text = ""
+      if (student_reasoning_is_relevant_to_problem(session['text_attributes_from_problem'], session['student_reasoning'])):
+        student_reasoning_relevance_text = "Note: The reasoning you have provided was actually already along the lines of what the teacher was looking for.  "
+      session['state_machine_state'] = 1
+      return ("What is %s ?" % problem_df['problem'][0], "Clue:  " + student_reasoning_relevance_text + leading_question_from_chatgpt)
+    else:
+      session['state_machine_state'] = 0
+      session['math_string_problem_index'] += 1
+      if (session['math_string_problem_index'] >= len(math_string_df.problems[0])):
+        session['math_string_df_index'] += 1
+        session['math_string_problem_index'] = 0
+      return ("", "")
 
   if (student_reasoning_is_relevant_to_problem(session['text_attributes_from_problem'], session['student_reasoning'])):
     session['state_machine_state'] = 0
@@ -717,19 +726,20 @@ def check_student_reasoning_3(math_string_df, student_response, chatgpt_output_c
   student_reasoning = student_response
   session['student_tries'] += 1
 
+  if (student_reasoning_is_relevant_to_problem(session['text_attributes_from_problem'], student_reasoning)):
+    session['math_string_problem_index'] += 1 
+    if (session['math_string_problem_index'] >= len(math_string_df.problems[0])):
+      session['math_string_df_index'] += 1
+      session['math_string_problem_index'] = 0
+    session['state_machine_state'] = 0
+    session['student_tries'] = -1
+    return ("You said:  %s" % student_reasoning, "Importantly, your reasoning was along the lines of what the teacher was looking for.")
+
   if (session['student_tries'] < session['retry_max_times']):
     if (DEBUG_LEVEL > 0):
       print("session['student_tries']:  %d, session['retry_max_times']:  %d, session['text_attributes_from_problem']:  %s, student_reasoning:  %s" % (session['student_tries'], session['retry_max_times'], session['text_attributes_from_problem'], student_reasoning))
 
-    if (student_reasoning_is_relevant_to_problem(session['text_attributes_from_problem'], student_reasoning)):
-      session['math_string_problem_index'] += 1 
-      if (session['math_string_problem_index'] >= len(math_string_df.problems[0])):
-        session['math_string_df_index'] += 1
-        session['math_string_problem_index'] = 0
-      session['state_machine_state'] = 0
-      session['student_tries'] = -1
-      return ("You said:  %s" % student_reasoning, "Importantly, your reasoning was along the lines of what the teacher was looking for.")
-    else:
+    if (not student_reasoning_is_relevant_to_problem(session['text_attributes_from_problem'], student_reasoning)):
       session['state_machine_state'] = 3
       return ("You said:  %s" % student_reasoning, "Please add other reasoning for your answer to this problem.")
 
