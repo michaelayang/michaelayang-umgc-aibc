@@ -17,7 +17,7 @@ conf.get_default().auth_token = os.getenv("NGROK_AUTHTOKEN")
 
 
 # Setup debugging and connection parameters
-CONNECT_TO_CHATGPT_API = False
+CONNECT_TO_CHATGPT_API = True
 
 CONNECT_TO_GEMINI_API = False
 GEMINI_MODEL_NAME = "gemini-3.6-flash"
