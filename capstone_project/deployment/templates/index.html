@@ -6,6 +6,17 @@
 </head>
 <body>
     <h1>MYang Arithmetic Number Talk Chatbot for UMGC AI Bootcamp</h1>
+    <div class="math_chatbot_login">
+        {% if math_chatbot_login %}
+          <form method="POST" action="/login">
+            <div>
+              <label for="values">Student Login:</label>
+              <input type="text" name="student_login" required>
+            </div>
+            <button type="submit">Login</button>
+          </form>
+        {% endif %}
+    </div>
     <div class="math-chatbot-problem">
         {% if math_chatbot_problem %}
             <label>{{ math_chatbot_problem }}</label>
