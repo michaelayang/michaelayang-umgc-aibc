@@ -816,6 +816,15 @@ for posixPath in Path.cwd().glob("*.json"):
 if (DEBUG_LEVEL > 0 and len(math_string_dfs) > 0):
   print(math_string_dfs[0].head())
 
+logging.basicConfig(
+  filename="MYangMathBot.log",
+  encoding="utf-8",
+  filemode="a", # "a" for append, "w" would be to rewrite/truncate
+  level=logging.INFO,
+  format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+
 def run_state_machine(math_string_dfs):
 
   # Open a ngrok tunnel to the HTTP server
@@ -951,14 +960,6 @@ def login():
     return render_template("index.html", math_chatbot_text=math_chatbot_text, math_chatbot_problem=math_chatbot_problem, math_chatbot_supplementary_text=math_chatbot_supplementary_text, show_student_response=show_student_response, show_next_problem_button=show_next_problem_button)
 
   if request.method == 'GET':
-    logging.basicConfig(
-      filename="MYangMathBot.log",
-      encoding="utf-8",
-      filemode="a", # "a" for append, "w" would be to rewrite/truncate
-      level=logging.INFO,
-      format="%(asctime)s - %(levelname)s - %(message)s"
-    )
-
     session['initialized'] = False
 
     session['state_machine_state'] = 0
