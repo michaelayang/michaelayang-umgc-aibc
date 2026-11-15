@@ -914,6 +914,9 @@ def reset():
 
 
 def execute_evaluation():
+  chatgpt_output_correlation_vector = np.array([0, 0, 0])
+  perfect_correlation_vector = np.array([0, 0, 0])
+
   for math_string_df in math_string_dfs:
     
     if (DEBUG_LEVEL > 0):
