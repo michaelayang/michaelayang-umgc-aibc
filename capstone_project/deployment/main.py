@@ -638,7 +638,12 @@ def state_problem_0(math_string_df, student_response, chatgpt_output_correlation
   session['state_machine_state'] = 1
 
   logging.info("student_login:  %s, state_problem_0():  math_chatbot_problem:  What is %s ?, math_chatbot_text:  " % (session['student_login'], problem_df['problem'][0]))
-  return ("What is %s ?" % problem_df['problem'][0], "")
+
+  instructions_text = ""
+  if ('instructions' in math_string_df.keys()):
+    instructions_text = math_string_df.instructions[0] + " ...  ";
+
+  return (instructions_text + "What is %s ?" % problem_df['problem'][0], "")
 
 
 def get_student_answer_1(math_string_df, student_response, chatgpt_output_correlation_vector, perfect_correlation_vector):
@@ -816,6 +821,10 @@ for posixPath in Path.cwd().glob("*.json"):
 if (DEBUG_LEVEL > 0 and len(math_string_dfs) > 0):
   print(math_string_dfs[0].head())
 
+# Note:  Python logging output is automatically
+#        synchronized between Flask threads, so logging
+#        statements in different user sessions
+#        cannot interleave mid-line.
 logging.basicConfig(
   filename="MYangMathBot.log",
   encoding="utf-8",
