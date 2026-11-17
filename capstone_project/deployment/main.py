@@ -113,7 +113,7 @@ import google.generativeai as genai
 
 APP_SECRET_KEY = os.environ.get("APP_SECRET_KEY")
 
-if (CONNECT_TO_CHATGPT_API):
+if CONNECT_TO_CHATGPT_API:
   client = OpenAI(
       api_key=os.environ.get("OPENAI_API_KEY"),
   )
@@ -125,22 +125,22 @@ if (CONNECT_TO_CHATGPT_API):
       input="What is 2 + 2?"
   )
 
-  if (DEBUG_LEVEL > 0):
+  if DEBUG_LEVEL > 0:
     print("OpenAI API basic test response:  %s" % response.output_text)
 
-if (CONNECT_TO_GEMINI_API):      
-  if (DEBUG_LEVEL > 0):
+if CONNECT_TO_GEMINI_API:
+  if DEBUG_LEVEL > 0:
     print("About to connect to Gemini.")
 
   gemini_api_key = os.getenv("GEMINI_API_KEY")
 
-  if (DEBUG_LEVEL > 0):
+  if DEBUG_LEVEL > 0:
     print("GEMINI_API_KEY is:  %s" % gemini_api_key)
 
   try:
     genai.configure(api_key=gemini_api_key)
 
-    if (DEBUG_LEVEL > 0):
+    if DEBUG_LEVEL > 0:
       print("Gemini connect point 1")
         
     model = genai.GenerativeModel(
@@ -154,7 +154,7 @@ if (CONNECT_TO_GEMINI_API):
                 safety_settings=[]
       )
 
-    if (DEBUG_LEVEL > 0):
+    if DEBUG_LEVEL > 0:
       print("Gemini connect point 2")
 
     gemini_session = model.start_chat(history=[])
@@ -196,16 +196,16 @@ if (CONNECT_TO_GEMINI_API):
 def get_text_attributes_from_problem(problem_df):
   text_attributes_from_problem = ""
 
-  if ('related_properties' in problem_df.columns):
+  if 'related_properties' in problem_df.columns:
     related_properties_df = pd.DataFrame.from_dict(problem_df['related_properties']).dropna()
-    if (len(related_properties_df) > 0):
+    if len(related_properties_df) > 0:
       for index in range(0, len(related_properties_df)):
         property_text = "; %s:  %s" %  (related_properties_df['related_properties'][index]['property'], related_properties_df['related_properties'][index]['usage'])
         text_attributes_from_problem += property_text
 
-  if ('related_problems' in problem_df.columns):
+  if 'related_problems' in problem_df.columns:
     related_problems_df = pd.DataFrame.from_dict(problem_df['related_problems']).dropna()
-    if (len(related_problems_df) > 0):
+    if len(related_problems_df) > 0:
       for index in range(0, len(related_problems_df)):
         property_text = "; %s = %s" %  (related_problems_df['related_problems'][index]['problem'], related_problems_df['related_problems'][index]['answer'])
         text_attributes_from_problem += property_text
@@ -235,7 +235,7 @@ def get_content_similarity(input_text, texts_to_correlate):
   texts_list = [ input_text ]
   texts_list.extend(texts_to_correlate)
 
-  if (DEBUG_LEVEL > 0):
+  if DEBUG_LEVEL > 0:
     print("input_text:  %s, texts_to_correlate:  %s, texts_list:  %s" % (input_text, texts_to_correlate, texts_list))
 
   vectorizer = TfidfVectorizer(min_df=2, max_df=0.7)
@@ -259,24 +259,24 @@ def student_reasoning_is_relevant_to_problem(text_attributes_from_problem, stude
   # Find similarities between student reasoning (and a list of previous student reasoning) and
   # teacher notes in the text_attributes_from_problem (that were read from the problem set .JSON file).
 
-  if (student_reasoning == "" or text_attributes_from_problem ==""):
+  if student_reasoning == "" or text_attributes_from_problem == "":
     return 0.0
 
-  if (DEBUG_LEVEL > 0):
+  if DEBUG_LEVEL > 0:
     print("student_reasoning:  %s" % student_reasoning)
     print("text_attributes_from_problem:  %s" % text_attributes_from_problem)
 
   content_similarity_df = get_content_similarity(student_reasoning, [ text_attributes_from_problem ])
   student_reasoning_similarity_series = content_similarity_df[student_reasoning][1:]
 
-  if (DEBUG_LEVEL > 0):
+  if DEBUG_LEVEL > 0:
     print("student_reasoning_similarity_series:  %s" % str(student_reasoning_similarity_series))
     print("student_reasoning_similarity_series.max().size:  %s" % str(student_reasoning_similarity_series.max().size))
     print("student_reasoning_similarity_series.max().shape:  %s" % str(student_reasoning_similarity_series.max().shape))
 
   student_reasoning_similarity_percentage = student_reasoning_similarity_series.max()
-  if (student_reasoning_similarity_series.max().size > 1):   # Remove max duplicates if necessary
-    if (DEBUG_LEVEL > 0):
+  if student_reasoning_similarity_series.max().size > 1:   # Remove max duplicates if necessary
+    if DEBUG_LEVEL > 0:
       print("student_reasoning_similarity_series.max().iloc[0]:  %s" % str(student_reasoning_similarity_series.max().iloc[0]))
     student_reasoning_similarity_percentage = student_reasoning_similarity_series.max().iloc[0]
 
@@ -291,18 +291,18 @@ def stub_to_correlate_phrases_in_a_0_to_10_ranking(text_phrase_0, text_phrase_1)
   content_similarity_df = get_content_similarity(text_phrase_0, [ text_phrase_1 ])
   reasoning_similarity_series = content_similarity_df[text_phrase_0][1:]
 
-  if (DEBUG_LEVEL > 0):
+  if DEBUG_LEVEL > 0:
     print("reasoning_similarity_series:  %s" % str(reasoning_similarity_series))
     print("reasoning_similarity_series.max().size:  %s" % str(reasoning_similarity_series.max().size))
     print("reasoning_similarity_series.max().shape:  %s" % str(reasoning_similarity_series.max().shape))
 
   reasoning_similarity_percentage = reasoning_similarity_series.max()
-  if (reasoning_similarity_series.max().size > 1):   # Remove max duplicates if necessary
-    if (DEBUG_LEVEL > 0):
+  if reasoning_similarity_series.max().size > 1:   # Remove max duplicates if necessary
+    if DEBUG_LEVEL > 0:
       print("reasoning_similarity_series.max().iloc[0]:  %s" % str(reasoning_similarity_series.max().iloc[0]))
     reasoning_similarity_percentage = reasoning_similarity_series.max().iloc[0]
 
-  if (DEBUG_LEVEL > 0):
+  if DEBUG_LEVEL > 0:
     print("text_phrase_0:  %s" % text_phrase_0)
     print("text_phrase_1:  %s" % text_phrase_1)
     print("reasoning_similarity_percentage is:  %f" % reasoning_similarity_percentage)
@@ -313,36 +313,36 @@ from parse import parse
 
 def ask_gemini_to_correlate_phrases_in_a_0_to_10_ranking(text_phrase_0, text_phrase_1):
 
-  if (text_phrase_0 == "" or text_phrase_1 == ""):
+  if text_phrase_0 == "" or text_phrase_1 == "":
     return 5 # If either text_phrase is just empty, return a median correlation rating 5 (out of 10), basically signifying no knowledge either way
 
   gemini_response = stub_to_correlate_phrases_in_a_0_to_10_ranking(text_phrase_0, text_phrase_1)
 
-  if (CONNECT_TO_GEMINI_API):
+  if CONNECT_TO_GEMINI_API:
     try:
-      if (DEBUG_LEVEL > 0):
+      if DEBUG_LEVEL > 0:
         print("Gemini debug point 3")
 
       message = "Rate on a scale of 0 to 10 the relevance of ideas contained in phrase \"" + text_phrase_0 + "\" to ideas in phrase \"" + text_phrase_1 + ".\"  Answer only with one integer number."
 
-      if (DEBUG_LEVEL > 0):
+      if DEBUG_LEVEL > 0:
         print("Gemini debug point 4")
 
       gemini_raw_response = gemini_session.send_message(message)
 
-      if (DEBUG_LEVEL > 0):
+      if DEBUG_LEVEL > 0:
         print("Gemini debug point 5")
         print("Gemini response rating for (%s, %s) was:  %s"  % (text_phrase_0, text_phrase_1, gemini_response))
 
       gemini_text_response = gemini_raw_response.candidates[0].content.parts[0].text
 
-      if (DEBUG_LEVEL > 0):
+      if DEBUG_LEVEL > 0:
         print("Gemini debug point 6")
         print("Gemini response text was:  %s"  % (gemini_text_response))
 
       result = parse("{:d}", gemini_text_response)
 
-      if (DEBUG_LEVEL > 0):
+      if DEBUG_LEVEL > 0:
         print("Gemini debug point 7")
         print("Gemini result was:  %s"  % (result))
         gemini_response = result[0]
@@ -362,14 +362,14 @@ def pick_best_chatgpt_feedback(problem_df, student_reasoning, chatgpt_feedback_l
   input_baseline_text = student_reasoning 
   input_baseline_text += get_text_attributes_from_problem(problem_df)
 
-  if (DEBUG_LEVEL > 0):
+  if DEBUG_LEVEL > 0:
     print("input_baseline_text:  %s" % input_baseline_text)
     print("chatgpt_feedback_list:  %s" % chatgpt_feedback_list)
 
   content_similarity_df = get_content_similarity(input_baseline_text, chatgpt_feedback_list)
   reasoning_similarity_series = content_similarity_df.iloc[0, 1:]
 
-  if (DEBUG_LEVEL > 0):
+  if DEBUG_LEVEL > 0:
     print("reasoning_similarity_series:  %s" % reasoning_similarity_series)
     print("reasoning_similarity_series.max():  %s" % reasoning_similarity_series.max())
     print("reasoning_similarity_series.idxmax():  %s" % reasoning_similarity_series.idxmax())
@@ -384,9 +384,9 @@ def chatgpt_api_supplies_leading_question(problem_df, student_answer, student_re
   leading_question_prompt = "A child incorrectly thinks that %s = %s when correctly %s = %s" \
                             % (problem_df['problem'][0], student_answer, problem_df['problem'][0], problem_df['answer'][0])
 
-  if ('related_properties' in problem_df.columns):
+  if 'related_properties' in problem_df.columns:
     related_properties_df = pd.DataFrame.from_dict(problem_df['related_properties']).dropna()
-    if (len(related_properties_df) > 0):
+    if len(related_properties_df) > 0:
       related_property = related_properties_df['related_properties'][0]
       related_property_property = related_property['property']
       related_property_usage = related_property['usage']
@@ -397,9 +397,9 @@ def chatgpt_api_supplies_leading_question(problem_df, student_answer, student_re
 
   leading_question_prompt += "  The child reasoned that '%s'" % student_reasoning
 
-  if ('common_errors' in problem_df.columns):
+  if 'common_errors' in problem_df.columns:
     common_errors_df = pd.DataFrame.from_dict(problem_df['common_errors']).dropna()
-    if (len(common_errors_df) > 0):
+    if len(common_errors_df) > 0:
       leading_question_prompt += ", and might have also incorrectly reasoned that: "
       for index in range(0, len(common_errors_df), 1):
         common_error = common_errors_df['common_errors'][index]
@@ -409,25 +409,25 @@ def chatgpt_api_supplies_leading_question(problem_df, student_answer, student_re
         leading_question_prompt += "  %s" % common_error_reasoning 
       leading_question_prompt += ".  "
 
-  if ('related_problems' in problem_df.columns):
+  if 'related_problems' in problem_df.columns:
     related_problems_df = pd.DataFrame.from_dict(problem_df['related_problems']).dropna()
-    if (len(related_problems_df) > 0):
+    if len(related_problems_df) > 0:
       leading_question_prompt += "  Related problems:  "
       for index in range(0, len(related_problems_df), 1):
         leading_question_addendum = "%s = %s" %  (related_problems_df['related_problems'][index]['problem'], related_problems_df['related_problems'][index]['answer'])
         leading_question_prompt += leading_question_addendum
         leading_question_prompt += ".  "
 
-  if ('related_properties' in problem_df.columns):
+  if 'related_properties' in problem_df.columns:
     related_properties_df = pd.DataFrame.from_dict(problem_df['related_properties']).dropna()
-    if (len(related_properties_df) > 1):
+    if len(related_properties_df) > 1:
       leading_question_prompt += "  Other related properties:  "
       for index in range(1, len(related_properties_df), 1):
         leading_question_addendum = "%s due to the %s property" %  (related_properties_df['related_properties'][index]['property'], related_properties_df['related_properties'][index]['usage'])
         leading_question_prompt += leading_question_addendum
         leading_question_prompt += ".  "
 
-  if (DEBUG_LEVEL > 0):
+  if DEBUG_LEVEL > 0:
     print("Question giving to ChatGPT:  %s" % leading_question_prompt)
 
   chatgpt_feedback_list = []
@@ -442,7 +442,7 @@ def chatgpt_api_supplies_leading_question(problem_df, student_answer, student_re
                     "9. If each group had 249, what would (249 times 4) give? How does that help check (996 div 4)?" \
                     "10. Can we split (996) into parts that are easy to divide by 4, like (800 + 196) or (1000 - 4), and divide each part correctly?"
 
-  if (CONNECT_TO_CHATGPT_API):  
+  if CONNECT_TO_CHATGPT_API:
     response = client.responses.create(model="gpt-5.5",
                                        instructions="You are a math teacher assistant.",
                                        input=leading_question_prompt
@@ -450,12 +450,12 @@ def chatgpt_api_supplies_leading_question(problem_df, student_answer, student_re
     response_output = response.output_text
 
   chatgpt_feedback_list = re.split(r'[0-9]+\.[ \t]+', response_output)
-  if (len(chatgpt_feedback_list) > 0):
+  if len(chatgpt_feedback_list) > 0:
     chatgpt_feedback_list = chatgpt_feedback_list[1:]
 
   best_chatgpt_feedback = pick_best_chatgpt_feedback(problem_df, student_reasoning, chatgpt_feedback_list, num_leading_questions_to_supply)
 
-  if (DEBUG_LEVEL > 0):
+  if DEBUG_LEVEL > 0:
     print("chatgpt_feedback_list:  %s" % chatgpt_feedback_list)
     print("best_chatgpt_feedback:  %s" % best_chatgpt_feedback)
 
@@ -482,18 +482,18 @@ def evaluate_one_number_talk_string(number_talk_string_df, chatgpt_output_correl
 
   previous_student_reasoning = []
     
-  if (DEBUG_LEVEL > 0):
+  if DEBUG_LEVEL > 0:
     print(number_talk_string_df)
     
   num_candidate_answers = number_talk_string_df.num_candidate_answers[0]
   retry_max_times = 2
-  if (DEBUG_LEVEL < EVALUATION_DEBUG_LEVEL):
+  if DEBUG_LEVEL < EVALUATION_DEBUG_LEVEL:
     retry_max_times = number_talk_string_df.retry_max_times[0]
   math_problems = number_talk_string_df.problems[0]
 
   last_math_problem_in_string = math_problems[len(math_problems)-1]
 
-  if (DEBUG_LEVEL > 0):
+  if DEBUG_LEVEL > 0:
     print("last_math_problem_in_string:  %s" % last_math_problem_in_string)
 
   # ---------------------------------------------------------------------------
@@ -503,60 +503,60 @@ def evaluate_one_number_talk_string(number_talk_string_df, chatgpt_output_correl
 
   correct_answer_from_teacher = problem_df['answer'][0]
 
-  if (DEBUG_LEVEL > 0):
+  if DEBUG_LEVEL > 0:
     print("correct_answer_from_teacher:  %s" % correct_answer_from_teacher)
       
   answer_good_enough = False
   student_tries = 0
-  while (not answer_good_enough and student_tries < retry_max_times):
-    if ('instructions' in number_talk_string_df.keys()):
+  while not answer_good_enough and student_tries < retry_max_times:
+    if 'instructions' in number_talk_string_df.keys():
         instructions = number_talk_string_df.instructions[0];
         print(instructions)
 
     student_answer = VAGUE_WRONG_ANSWER
-    if (CONTROL_RUN):
+    if CONTROL_RUN:
       student_answer = "Something around like " + correct_answer_from_teacher + " but not exactly ?"
 
-    if (DEBUG_LEVEL < EVALUATION_DEBUG_LEVEL):
+    if DEBUG_LEVEL < EVALUATION_DEBUG_LEVEL:
       student_answer = input("What is %s ?" % problem_df['problem'][0])
 
     # ---------------------------------------------------------------------------
     # The following fulfills bullet point 3(c) in the block comment above.
-    if (student_tries == 0 and not CONTROL_RUN):
+    if student_tries == 0 and not CONTROL_RUN:
       student_reasoning = VAGUE_WRONG_REASONING
     else:
       student_reasoning = str(justify_current_problem_solution_with_answers_to_previous_problems(math_problems))
-      if ('related_properties' in problem_df.keys() and len(problem_df['related_properties']) > 0):
+      if 'related_properties' in problem_df.keys() and len(problem_df['related_properties']) > 0:
         student_reasoning += " and " + str(problem_df['related_properties'][0]['property'] + " is relevant.")
 
-    if (DEBUG_LEVEL < EVALUATION_DEBUG_LEVEL):
+    if DEBUG_LEVEL < EVALUATION_DEBUG_LEVEL:
       student_reasoning = input("And what is your reasoning for your answer?")
 
-    if (DEBUG_LEVEL > 0):
+    if DEBUG_LEVEL > 0:
       print("Problem:  %s, Answer:  %s, Student Answer:  %s, Student Reasoning:  %s" \
             % (problem_df['problem'][0], correct_answer_from_teacher, student_answer, student_reasoning))
 
     student_answer_is_correct = False
 
-    if (correct_answer_from_teacher == student_answer):
+    if correct_answer_from_teacher == student_answer:
       student_answer_is_correct = True
 
-    if (not student_answer_is_correct):
+    if not student_answer_is_correct:
       # ---------------------------------------------------------------------------
       # The following fulfills bullet point 3(b) in the block comment above.
       verification_query = "A student answered that %s = %s.  Verify the answer is incorrect, yes or no." % (problem_df['problem'][0], student_answer)
 
-      if (DEBUG_LEVEL > 1):
+      if DEBUG_LEVEL > 1:
         print(verification_query)
 
-      if (CONNECT_TO_CHATGPT_API):  
+      if CONNECT_TO_CHATGPT_API:
         response = client.responses.create(
           model="gpt-5.5",
           instructions="You are a math teacher assistant.",
           input=verification_query
         )
 
-        if (response.output_text[:3].lower() != "yes"):
+        if response.output_text[:3].lower() != "yes":
           student_answer_is_correct = True
 
     previous_student_reasoning.append(student_reasoning)
@@ -564,11 +564,11 @@ def evaluate_one_number_talk_string(number_talk_string_df, chatgpt_output_correl
 
     text_attributes_from_problem = get_text_attributes_from_problem(problem_df)
 
-    if (not student_answer_is_correct):
+    if not student_answer_is_correct:
       leading_question_from_chatgpt = chatgpt_api_supplies_leading_question(problem_df, student_answer, student_reasoning, num_candidate_answers)
       print(leading_question_from_chatgpt)
 
-      if (DEBUG_LEVEL >= EVALUATION_DEBUG_LEVEL):
+      if DEBUG_LEVEL >= EVALUATION_DEBUG_LEVEL:
         chatgpt_output_correlation_to_student_reasoning = ask_gemini_to_correlate_phrases_in_a_0_to_10_ranking(student_reasoning, leading_question_from_chatgpt)
         chatgpt_output_correlation_to_correct_answer = ask_gemini_to_correlate_phrases_in_a_0_to_10_ranking(correct_answer_from_teacher, leading_question_from_chatgpt)  
         chatgpt_output_correlation_to_related_properties = ask_gemini_to_correlate_phrases_in_a_0_to_10_ranking(text_attributes_from_problem, leading_question_from_chatgpt)  
@@ -588,7 +588,7 @@ def evaluate_one_number_talk_string(number_talk_string_df, chatgpt_output_correl
               % (last_math_problem_in_string, student_reasoning, text_attributes_from_problem, leading_question_from_chatgpt, (chatgpt_output_correlation_distance/perfect_correlation_distance)*100.0))
 
       print("Let's try to think of another answer to this problem.")
-      if (student_reasoning_is_relevant_to_problem(text_attributes_from_problem, student_reasoning)):
+      if student_reasoning_is_relevant_to_problem(text_attributes_from_problem, student_reasoning):
         print("Note: The reasoning you have provided was actually already along the lines of what the teacher was looking for.")
     else:
       print("Your answer was correct!")
@@ -596,20 +596,20 @@ def evaluate_one_number_talk_string(number_talk_string_df, chatgpt_output_correl
       student_tries = 0 # Since the student has given a correct answer, now allow the student a full set of tries to create good reasoning now.
 
       reasoning_good_enough = False
-      while (not reasoning_good_enough and student_tries < retry_max_times):    
-        if (student_reasoning_is_relevant_to_problem(text_attributes_from_problem, student_reasoning)):
+      while not reasoning_good_enough and student_tries < retry_max_times:
+        if student_reasoning_is_relevant_to_problem(text_attributes_from_problem, student_reasoning):
           print("Importantly, your reasoning was along the lines of what the teacher was looking for.")
           reasoning_good_enough = True
         else:
-          if (DEBUG_LEVEL < EVALUATION_DEBUG_LEVEL):
+          if DEBUG_LEVEL < EVALUATION_DEBUG_LEVEL:
             student_reasoning = input("Please add other reasoning for your answer to this problem.")
             previous_student_reasoning.append(student_reasoning)
           student_tries += 1
 
-    if (DEBUG_LEVEL > 0):
+    if DEBUG_LEVEL > 0:
       print("previous_student_reasoning:  %s" % previous_student_reasoning)
 
-  return (chatgpt_output_correlation_vector, perfect_correlation_vector)
+  return chatgpt_output_correlation_vector, perfect_correlation_vector
 
 
 def vector_tip_distance(vector0, vector1):
@@ -619,7 +619,7 @@ def vector_tip_distance(vector0, vector1):
 
 
 def get_problem_df(math_string_df):
-  if (DEBUG_LEVEL > 0):
+  if DEBUG_LEVEL > 0:
     print("session['math_string_df_index'] is %s, session['math_string_problem_index'] is %s" % (session['math_string_df_index'], session['math_string_problem_index']))
 
   math_problems = math_string_df.problems[0]
