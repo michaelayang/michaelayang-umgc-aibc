@@ -403,7 +403,6 @@ def chatgpt_api_supplies_leading_question(problem_df, student_answer, student_re
       leading_question_prompt += ", and might have also incorrectly reasoned that: "
       for index in range(0, len(common_errors_df), 1):
         common_error = common_errors_df['common_errors'][index]
-        common_error_error = common_error['error']
         common_error_reasoning = common_error['reasoning']
         if (index > 0):
          leading_question_prompt += ", and "
@@ -477,7 +476,10 @@ import numpy as np
 import logging
 
 def evaluate_one_number_talk_string(number_talk_string_df, chatgpt_output_correlation_vector, perfect_correlation_vector):
-    
+
+  chatgpt_output_correlation_vector = np.array([0, 0, 0])
+  perfect_correlation_vector = np.array([0, 0, 0])
+
   previous_student_reasoning = []
     
   if (DEBUG_LEVEL > 0):
@@ -640,10 +642,10 @@ def state_problem_0(math_string_df, student_response, chatgpt_output_correlation
   logging.info("student_login:  %s, state_problem_0():  math_chatbot_problem:  What is %s ?, math_chatbot_text:  " % (session['student_login'], problem_df['problem'][0]))
 
   instructions_text = ""
-  if ('instructions' in math_string_df.keys()):
+  if 'instructions' in math_string_df.keys():
     instructions_text = math_string_df.instructions[0] + " ...  ";
 
-  return (instructions_text + "What is %s ?" % problem_df['problem'][0], "")
+  return instructions_text + "What is %s ?" % problem_df['problem'][0], ""
 
 
 def get_student_answer_1(math_string_df, student_response, chatgpt_output_correlation_vector, perfect_correlation_vector):
@@ -655,7 +657,7 @@ def get_student_answer_1(math_string_df, student_response, chatgpt_output_correl
   session['text_attributes_from_problem'] = get_text_attributes_from_problem(problem_df)
 
   logging.info("student_login:  %s, get_student_answer_1():  math_chatbot_problem:  Your problem answer was:  %s, math_chatbot_text:  And what is your reasoning for your answer?" % (session['student_login'], session['student_answer']))
-  return ("Your problem answer was:  %s" % session['student_answer'], "And what is your reasoning for your answer?")
+  return "Your problem answer was:  %s" % session['student_answer'], "And what is your reasoning for your answer?"
 
 
 def get_student_reasoning_2(math_string_df, student_response, chatgpt_output_correlation_vector, perfect_correlation_vector):
@@ -667,70 +669,70 @@ def get_student_reasoning_2(math_string_df, student_response, chatgpt_output_cor
 
   correct_answer_from_teacher = problem_df['answer'][0]
 
-  if (DEBUG_LEVEL > 0):
+  if DEBUG_LEVEL > 0:
     print("get_student_reasoning_2():  student_answer is %s and correct_answer_from_teacher is %s" % (session['student_answer'], correct_answer_from_teacher))
 
   student_answer_is_correct = False
 
-  if (session['student_answer'] != correct_answer_from_teacher):
-    if (DEBUG_LEVEL > 0):
+  if session['student_answer'] != correct_answer_from_teacher:
+    if DEBUG_LEVEL > 0:
       print("get_student_reasoning_2():  student_response was *not* the same as correct_answer_from_teacher")
 
     # ---------------------------------------------------------------------------
     # The following fulfills bullet point 3(b) in the block-comment close to the top of this file.
     verification_query = "A student answered that %s = %s.  Verify the answer is incorrect, yes or no." % (problem_df['problem'][0], session['student_answer'])
 
-    if (DEBUG_LEVEL > 0):
+    if DEBUG_LEVEL > 0:
       print(verification_query)
 
-    if (CONNECT_TO_CHATGPT_API):  
+    if CONNECT_TO_CHATGPT_API:
       response = client.responses.create(
           model="gpt-5.5",
           instructions="You are a math teacher assistant.",
           input=verification_query
       )
 
-      if (response.output_text[:3].lower() != "yes"):
+      if response.output_text[:3].lower() != "yes":
         student_answer_is_correct = True
         session['student_tries'] = 0
   else:
     student_answer_is_correct = True
     session['student_tries'] = 0
-    if (DEBUG_LEVEL > 0):
+    if DEBUG_LEVEL > 0:
       print("get_student_reasoning_2():  student_response was correct!")
 
-  if (not student_answer_is_correct):
-    if (session['student_tries'] < session['retry_max_times']):
+  if not student_answer_is_correct:
+    if session['student_tries'] < session['retry_max_times']:
       leading_question_from_chatgpt = chatgpt_api_supplies_leading_question(problem_df, session['student_answer'], session['student_reasoning'], session['num_candidate_answers'])
       student_reasoning_relevance_text = ""
-      if (student_reasoning_is_relevant_to_problem(session['text_attributes_from_problem'], session['student_reasoning'])):
+      if student_reasoning_is_relevant_to_problem(session['text_attributes_from_problem'], session['student_reasoning']):
         student_reasoning_relevance_text = "Note: The reasoning you have provided was actually already along the lines of what the teacher was looking for.  "
       session['state_machine_state'] = 1
       logging.info("student_login:  %s, get_student_reasoning_2() A:  Student Reasoning:  %s, Student Tries:  %s, math_chatbot_problem:  What is %s ?, math_chatbot_text:  Clue:  %s" % (session['student_login'], session['student_reasoning'], session['student_tries'], problem_df['problem'][0], student_reasoning_relevance_text + leading_question_from_chatgpt))
-      return ("What is %s ?" % problem_df['problem'][0], "Clue:  " + student_reasoning_relevance_text + leading_question_from_chatgpt)
+      return "What is %s ?" % problem_df['problem'][0], "Clue:  " + student_reasoning_relevance_text + leading_question_from_chatgpt
     else:
       session['state_machine_state'] = 0
       session['math_string_problem_index'] += 1
-      if (session['math_string_problem_index'] >= len(math_string_df.problems[0])):
+      if session['math_string_problem_index'] >= len(math_string_df.problems[0]):
         session['math_string_df_index'] += 1
         session['math_string_problem_index'] = 0
       logging.info("student_login:  %s, get_student_reasoning_2() B:  Student Reasoning:  %s, Student Tries:  %s, math_chatbot_problem:  What is %s ?, math_chatbot_text:  " % (session['student_login'], session['student_reasoning'], session['student_tries'], problem_df['problem'][0]))
-      return ("", "")
+      return "", ""
 
-  if (student_reasoning_is_relevant_to_problem(session['text_attributes_from_problem'], session['student_reasoning'])):
+  if student_reasoning_is_relevant_to_problem(session['text_attributes_from_problem'], session['student_reasoning']):
     session['state_machine_state'] = 0
     session['math_string_problem_index'] += 1
-    if (session['math_string_problem_index'] >= len(math_string_df.problems[0])):
+    if session['math_string_problem_index'] >= len(math_string_df.problems[0]):
       session['math_string_df_index'] += 1
       session['math_string_problem_index'] = 0
     session['student_tries'] = -1
     logging.info("student_login:  %s, get_student_reasoning_2() C:  Student Reasoning:  %s, Student Tries:  %s, math_chatbot_problem:  Your answer %s was correct!, math_chatbot_text:  Importantly, your reasoning was along the lines of what the teacher was looking for." % (session['student_login'], session['student_reasoning'], session['student_tries'], session['student_answer']))
-    return ("Your answer %s was correct!" % session['student_answer'], "Importantly, your reasoning was along the lines of what the teacher was looking for.")
+    return "Your answer %s was correct!" % session['student_answer'], "Importantly, your reasoning was along the lines of what the teacher was looking for."
 
   session['state_machine_state'] = 3
   session['student_tries'] = 1
   logging.info("student_login:  %s, get_student_reasoning_2() D:  Student Reasoning:  %s, Student Tries:  %s, math_chatbot_problem:  Your answer %s was correct!, math_chatbot_text:  Please add other reasoning for your answer to this problem." % (session['student_login'], session['student_reasoning'], session['student_tries'], session['student_answer']))
-  return ("Your answer %s was correct!" % session['student_answer'], "Please add other reasoning for your answer to this problem.")
+  return "Your answer %s was correct!" % session['student_answer'], "Please add other reasoning for your answer to this problem."
 
 
 def check_student_reasoning_3(math_string_df, student_response, chatgpt_output_correlation_vector, perfect_correlation_vector):
@@ -738,33 +740,33 @@ def check_student_reasoning_3(math_string_df, student_response, chatgpt_output_c
   student_reasoning = student_response
   session['student_tries'] += 1
 
-  if (student_reasoning_is_relevant_to_problem(session['text_attributes_from_problem'], student_reasoning)):
+  if student_reasoning_is_relevant_to_problem(session['text_attributes_from_problem'], student_reasoning):
     session['math_string_problem_index'] += 1 
-    if (session['math_string_problem_index'] >= len(math_string_df.problems[0])):
+    if session['math_string_problem_index'] >= len(math_string_df.problems[0]):
       session['math_string_df_index'] += 1
       session['math_string_problem_index'] = 0
     session['state_machine_state'] = 0
     session['student_tries'] = -1
     logging.info("student_login:  %s, check_student_reasoning_3() A:  Student Reasoning:  %s, Student Tries:  %s, math_chatbot_problem:  You said:  %s, math_chatbot_text:  Importantly, your reasoning was along the lines of what the teacher was looking for." % (session['student_login'], session['student_reasoning'], session['student_tries'], session['student_reasoning']))
-    return ("You said:  %s" % student_reasoning, "Importantly, your reasoning was along the lines of what the teacher was looking for.")
+    return "You said:  %s" % student_reasoning, "Importantly, your reasoning was along the lines of what the teacher was looking for."
 
-  if (session['student_tries'] < session['retry_max_times']):
-    if (DEBUG_LEVEL > 0):
+  if session['student_tries'] < session['retry_max_times']:
+    if DEBUG_LEVEL > 0:
       print("session['student_tries']:  %d, session['retry_max_times']:  %d, session['text_attributes_from_problem']:  %s, student_reasoning:  %s" % (session['student_tries'], session['retry_max_times'], session['text_attributes_from_problem'], student_reasoning))
 
-    if (not student_reasoning_is_relevant_to_problem(session['text_attributes_from_problem'], student_reasoning)):
+    if not student_reasoning_is_relevant_to_problem(session['text_attributes_from_problem'], student_reasoning):
       session['state_machine_state'] = 3
       logging.info("student_login:  %s, check_student_reasoning_3() B:  Student Reasoning:  %s, Student Tries:  %s, math_chatbot_problem:  You said:  %s, math_chatbot_text:  Please add other reasoning for your answer to this problem." % (session['student_login'], session['student_reasoning'], session['student_tries'], session['student_reasoning']))
-      return ("You said:  %s" % student_reasoning, "Please add other reasoning for your answer to this problem.")
+      return "You said:  %s" % student_reasoning, "Please add other reasoning for your answer to this problem."
 
   session['math_string_problem_index'] += 1 
-  if (session['math_string_problem_index'] >= len(math_string_df.problems[0])):
+  if session['math_string_problem_index'] >= len(math_string_df.problems[0]):
     session['math_string_df_index'] += 1
     session['math_string_problem_index'] = 0
   session['state_machine_state'] = 0
   session['student_tries'] = -1
   logging.info("student_login:  %s, check_student_reasoning_3() C:  Student Reasoning:  %s, Student Tries:  %s, math_chatbot_problem:  , math_chatbot_text:  " % (session['student_login'], session['student_reasoning'], session['student_tries']))
-  return ("", "")
+  return "", ""
 
 
 def state_machine_step(math_string_df, student_response, chatgpt_output_correlation_vector, perfect_correlation_vector):
@@ -785,8 +787,6 @@ def state_machine_step(math_string_df, student_response, chatgpt_output_correlat
       case _:
         return state_problem(math_string_df, student_response, chatgpt_output_correlation_vector, perfect_correlation_vector)
 
-  #return evaluate_one_number_talk_string(math_string_df, chatgpt_output_correlation_vector, perfect_correlation_vector)
-
 
 from pathlib import Path
 import pandas as pd
@@ -794,7 +794,6 @@ import pandas as pd
 from flask import Flask, render_template, request, session
 from pathlib import Path
 import threading
-import matplotlib.pyplot as plt
 import io
 import os
 import base64
@@ -808,18 +807,6 @@ app.secret_key = APP_SECRET_KEY
 
 port = 5000
 
-
-chatgpt_output_correlation_vector = np.array([0, 0, 0])
-perfect_correlation_vector = np.array([0, 0, 0])
-
-math_string_dfs = []
-for posixPath in Path.cwd().glob("*.json"):
-  print("File path:  %s" % posixPath)
-  math_string_df = pd.read_json(posixPath)
-  math_string_dfs.append(math_string_df)
-    
-if (DEBUG_LEVEL > 0 and len(math_string_dfs) > 0):
-  print(math_string_dfs[0].head())
 
 # Note:  Python logging output is automatically
 #        synchronized between Flask threads, so logging
@@ -863,15 +850,11 @@ def index():
     show_student_response = True
     show_next_problem_button = False
     math_chatbot_supplementary_text = ""
-    if (session['math_string_df_index'] >= len(math_string_dfs)):
+    if session['math_string_df_index'] >= len(math_string_dfs):
       # 4.  Say "thank you for the conversation" to the student and assure them that good elements of the math conversation
       #     have been recorded (logged) and will be passed to a human teacher for review.  Allow the student to sign off the session.
       #
-      debug_thank_you_text = ""
-      #if (DEBUG_LEVEL > 0):
-      #  debug_thank_you_text = "session['math_string_df_index']:  " + str(session['math_string_df_index']) + ", len(math_string_dfs):  " + str(len(math_string_dfs)) + " "
-
-      math_chatbot_supplementary_text = debug_thank_you_text + "Thank you for having this math conversation!  Your responses will be reviewed by human teachers to help you to improve."
+      math_chatbot_supplementary_text = "Thank you for having this math conversation!  Your responses will be reviewed by human teachers to help you to improve."
       show_student_response = False
       show_next_problem_button = False
 
@@ -881,23 +864,19 @@ def index():
       session['initialized'] = False
 
       # 5.  Disconnect from the ChatGPT API.
-      if (CONNECT_TO_CHATGPT_API):
+      if CONNECT_TO_CHATGPT_API:
         client.close()
 
-    elif (session['state_machine_state'] == 0 \
-           and (session['student_tries'] >= session['retry_max_times'] or session['student_tries'] < 0)):
+    elif (session['state_machine_state'] == 0
+          and (session['student_tries'] >= session['retry_max_times'] or session['student_tries'] < 0)):
       math_chatbot_supplementary_text = "Please push the button to go on to the next problem."
       show_student_response = False
       show_next_problem_button = True
       session['student_tries'] = 0
 
   if request.method == 'GET':
-    if (not 'initialized' in session):
-      session['state_machine_state'] = 0
-      session['math_string_df_index'] = 0
-      session['math_string_problem_index'] = 0
-      session['student_tries'] = 0
-      session['initialized'] = True
+    if not 'initialized' in session:
+      initialize_to_login_state()
 
     math_string_index = session['math_string_df_index']
     math_chatbot_supplementary_text = ""
@@ -913,7 +892,6 @@ def index():
 @app.route('/next', methods=['POST'])
 def next():
   math_string_index = session['math_string_df_index']
-  math_string_problem_index = session['math_string_problem_index']
   session['student_tries'] = 0
   math_chatbot_supplementary_text = ""
   show_student_response = True
@@ -927,12 +905,8 @@ def next():
 
 @app.route('/reset', methods=['GET'])
 def reset():
-  session['state_machine_state'] = 0
-  session['math_string_df_index'] = 0
-  session['math_string_problem_index'] = 0
-  session['student_tries'] = 0
-  session['initialized'] = True
-  
+  initialize_to_login_state()
+
   math_chatbot_supplementary_text = ""
   math_string_index = 0
   show_student_response = True
@@ -952,12 +926,8 @@ def login():
     student_login = request.form['student_login']
     session['student_login'] = student_login
 
-    session['state_machine_state'] = 0
-    session['math_string_df_index'] = 0
-    session['math_string_problem_index'] = 0
-    session['student_tries'] = 0
-    session['initialized'] = True
-  
+    initialize_to_login_state()
+
     math_chatbot_supplementary_text = ""
     math_string_index = 0
     show_student_response = True
@@ -969,15 +939,8 @@ def login():
     return render_template("index.html", math_chatbot_text=math_chatbot_text, math_chatbot_problem=math_chatbot_problem, math_chatbot_supplementary_text=math_chatbot_supplementary_text, show_student_response=show_student_response, show_next_problem_button=show_next_problem_button)
 
   if request.method == 'GET':
-    session['initialized'] = False
+    initialize_to_login_state()
 
-    session['state_machine_state'] = 0
-    session['math_string_df_index'] = 0
-    session['math_string_problem_index'] = 0
-    session['student_tries'] = 0
-    session['initialized'] = True
-
-    math_string_index = 0
     math_chatbot_supplementary_text = ""
     show_student_response = False
     show_next_problem_button = False
@@ -986,13 +949,21 @@ def login():
   return render_template("index.html", math_chatbot_text="", math_chatbot_problem="", math_chatbot_supplementary_text="", show_student_response=show_student_response, show_next_problem_button=show_next_problem_button, math_chatbot_login="Login")
 
 
-def execute_evaluation():
+def initialize_to_login_state():
+  session['state_machine_state'] = 0
+  session['math_string_df_index'] = 0
+  session['math_string_problem_index'] = 0
+  session['student_tries'] = 0
+  session['initialized'] = True
+
+
+def execute_evaluation(math_string_dfs):
   chatgpt_output_correlation_vector = np.array([0, 0, 0])
   perfect_correlation_vector = np.array([0, 0, 0])
 
   for math_string_df in math_string_dfs:
     
-    if (DEBUG_LEVEL > 0):
+    if DEBUG_LEVEL > 0:
       print(math_string_df.head())
     
     (chatgpt_output_correlation_vector, perfect_correlation_vector) = \
@@ -1005,7 +976,7 @@ def execute_evaluation():
                                                                 perfect_correlation_vector)
     
   print("The distance between the tip of the chatgpt_output_correlation_overall vector and the perfect_correlation_vector is %f" % chatgpt_output_correlation_distance)
-  if (perfect_correlation_distance != 0):
+  if perfect_correlation_distance != 0:
     print("This is a performance score of %s %%" % ((chatgpt_output_correlation_distance/perfect_correlation_distance)*100.0))
   else:
     print("This is a performance score of 100 %%")
@@ -1016,24 +987,31 @@ def execute_evaluation():
   print("Thank you for having this math conversation!  Your responses will be reviewed by human teachers to help you to improve.")
 
   # 5.  Disconnect from the ChatGPT API.
-  if (CONNECT_TO_CHATGPT_API):
+  if CONNECT_TO_CHATGPT_API:
     client.close()
 
   return
 
 def execute_main():
+  math_string_dfs = []
+  for posixPath in Path.cwd().glob("*.json"):
+    print("File path:  %s" % posixPath)
+    math_string_df = pd.read_json(posixPath)
+    math_string_dfs.append(math_string_df)
+
+  if DEBUG_LEVEL > 0 and len(math_string_dfs) > 0:
+    print(math_string_dfs[0].head())
 
   # The following code executes an interactive session with a user of this math bot
-  if (DEBUG_LEVEL < EVALUATION_DEBUG_LEVEL):
+  if DEBUG_LEVEL < EVALUATION_DEBUG_LEVEL:
     run_state_machine(math_string_dfs)
     return
 
   # The following code executes an evaluation (scoring) of this math bot
-  execute_evaluation()
+  execute_evaluation(math_string_dfs)
 
   return
 
 
 execute_main()
-
 
