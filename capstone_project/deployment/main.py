@@ -200,15 +200,6 @@ def execute_main():
     except Exception as e:
       print("ERROR:  Gemini got an error:  %s" % str(e))
 
-  math_string_dfs = []
-  for posixPath in Path.cwd().glob("*.json"):
-    print("File path:  %s" % posixPath)
-    math_string_df = pd.read_json(posixPath)
-    math_string_dfs.append(math_string_df)
-
-  if DEBUG_LEVEL > 0 and len(math_string_dfs) > 0:
-    print(math_string_dfs[0].head())
-
   # The following code executes an interactive session with a user of this math bot
   if DEBUG_LEVEL < EVALUATION_DEBUG_LEVEL:
     run_state_machine(math_string_dfs)
@@ -226,6 +217,18 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("APP_SECRET_KEY")
 
 port = 5000
+
+chatgpt_output_correlation_vector = np.array([0, 0, 0])
+perfect_correlation_vector = np.array([0, 0, 0])
+
+math_string_dfs = []
+for posixPath in Path.cwd().glob("*.json"):
+  print("File path:  %s" % posixPath)
+  math_string_df = pd.read_json(posixPath)
+  math_string_dfs.append(math_string_df)
+
+if DEBUG_LEVEL > 0 and len(math_string_dfs) > 0:
+  print(math_string_dfs[0].head())
 
 # Note:  Python logging output is automatically
 #        synchronized between Flask threads, so logging
