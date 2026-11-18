@@ -237,7 +237,7 @@ if CONNECT_TO_GEMINI_API:
     if DEBUG_LEVEL > 0:
       print("Gemini connect point 2")
 
-    model.start_chat(history=[])
+    gemini_session = model.start_chat(history=[])
 
   except Exception as e:
     print("ERROR:  Gemini got an error:  %s" % str(e))
