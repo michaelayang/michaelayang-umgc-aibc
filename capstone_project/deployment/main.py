@@ -416,6 +416,9 @@ def initialize_to_login_state():
 
 def execute_evaluation(math_string_dfs):
 
+  chatgpt_output_correlation_vector = np.array([0, 0, 0])
+  perfect_correlation_vector = np.array([0, 0, 0])
+
   for local_math_string_df in math_string_dfs:
 
     if DEBUG_LEVEL > 0:
