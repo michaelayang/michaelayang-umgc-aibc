@@ -263,9 +263,7 @@ def run_state_machine(math_string_dfs):
 def index():
   math_chatbot_text = None
   math_chatbot_problem = ""
-  math_chatbot_supplementary_text = ""
-  show_student_response = ""
-  show_next_problem_button = ""
+  math_chatbot_supplementary_text, show_next_problem_button, show_student_response = set_baseline_display_parameters()
 
   if request.method == 'POST':
     student_response = request.form['student_response']
@@ -274,9 +272,7 @@ def index():
 
     (math_chatbot_problem, math_chatbot_text) = state_machine_step(math_string_dfs[math_string_index], student_response)
 
-    show_student_response = True
-    show_next_problem_button = False
-    math_chatbot_supplementary_text = ""
+    math_chatbot_supplementary_text, show_next_problem_button, show_student_response = set_baseline_display_parameters()
     if session['math_string_df_index'] >= len(math_string_dfs):
       # 4.  Say "thank you for the conversation" to the student and assure them that good elements of the math conversation
       #     have been recorded (logged) and will be passed to a human teacher for review.  Allow the student to sign off the session.
@@ -306,9 +302,7 @@ def index():
       initialize_to_login_state()
 
     math_string_index = session['math_string_df_index']
-    math_chatbot_supplementary_text = ""
-    show_student_response = True
-    show_next_problem_button = False
+    math_chatbot_supplementary_text, show_next_problem_button, show_student_response = set_baseline_display_parameters()
 
     (math_chatbot_problem, math_chatbot_text) = state_machine_step(math_string_dfs[math_string_index], "")
 
@@ -327,9 +321,7 @@ def index():
 def next():
   math_string_index = session['math_string_df_index']
   session['student_tries'] = 0
-  math_chatbot_supplementary_text = ""
-  show_student_response = True
-  show_next_problem_button = False
+  math_chatbot_supplementary_text, show_next_problem_button, show_student_response = set_baseline_display_parameters()
 
   (math_chatbot_problem, math_chatbot_text) = state_machine_step(math_string_dfs[math_string_index], "")
 
@@ -342,14 +334,19 @@ def next():
                          show_student_response=show_student_response, show_next_problem_button=show_next_problem_button)
 
 
+def set_baseline_display_parameters():
+  math_chatbot_supplementary_text = ""
+  show_student_response = True
+  show_next_problem_button = False
+  return math_chatbot_supplementary_text, show_next_problem_button, show_student_response
+
+
 @app.route('/reset', methods=['GET'])
 def reset():
   initialize_to_login_state()
 
-  math_chatbot_supplementary_text = ""
   math_string_index = 0
-  show_student_response = True
-  show_next_problem_button = False
+  math_chatbot_supplementary_text, show_next_problem_button, show_student_response = set_baseline_display_parameters()
 
   (math_chatbot_problem, math_chatbot_text) = state_machine_step(math_string_dfs[math_string_index], "")
 
@@ -367,8 +364,8 @@ def login():
   session['student_login'] = "not logged in"
 
   math_chatbot_supplementary_text = ""
-  show_student_response = ""
-  show_next_problem_button = ""
+  show_student_response = False
+  show_next_problem_button = False
 
   if request.method == 'POST':
     student_login = request.form['student_login']
@@ -376,10 +373,8 @@ def login():
 
     initialize_to_login_state()
 
-    math_chatbot_supplementary_text = ""
     math_string_index = 0
-    show_student_response = True
-    show_next_problem_button = False
+    math_chatbot_supplementary_text, show_next_problem_button, show_student_response = set_baseline_display_parameters()
 
     (math_chatbot_problem, math_chatbot_text) = state_machine_step(math_string_dfs[math_string_index], "")
 
