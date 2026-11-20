@@ -611,9 +611,9 @@ def ask_gemini_to_correlate_phrases_in_a_0_to_10_ranking(text_phrase_0, text_phr
   return gemini_response
 
 
-def pick_best_chatgpt_feedback(problem_df, student_reasoning, chatgpt_feedback_list, n):
+def pick_best_chatgpt_feedback(problem_df, student_reasoning, chatgpt_feedback_list):
   # Find similarities between student reasoning + teacher notes, against a list
-  # of chatgpt feedback n items long.
+  # of chatgpt feedback items.
 
   input_baseline_text = student_reasoning 
   input_baseline_text += get_text_attributes_from_problem(problem_df)
@@ -708,7 +708,7 @@ def chatgpt_api_supplies_leading_question(problem_df, student_answer, student_re
   if len(chatgpt_feedback_list) > 0:
     chatgpt_feedback_list = chatgpt_feedback_list[1:]
 
-  best_chatgpt_feedback = pick_best_chatgpt_feedback(problem_df, student_reasoning, chatgpt_feedback_list, num_leading_questions_to_supply)
+  best_chatgpt_feedback = pick_best_chatgpt_feedback(problem_df, student_reasoning, chatgpt_feedback_list)
 
   if DEBUG_LEVEL > 0:
     print("chatgpt_feedback_list:  %s" % chatgpt_feedback_list)
