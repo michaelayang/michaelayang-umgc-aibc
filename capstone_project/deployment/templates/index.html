@@ -29,7 +29,7 @@
     </div>
     <div class="student-input">
       {% if show_student_response %}
-        <form method="POST" action="/">
+        <form id="taskForm" method="POST" action="/">
           <div>
             <label for="values">Student Response:</label>
             <input type="text" name="student_response" required>
@@ -48,5 +48,16 @@
             <label>{{ math_chatbot_supplementary_text }}</label>
         {% endif %}
     </div>
+    <div id="loadingGraphic" class="loading-graphic">
+      <img id="spinner" class="spinner" src="/static/arithmetic-symbols-spinner.png">
+    </div>
+    <script>
+      const form = document.getElementById("taskForm");
+      const overlay = document.getElementById("loadingGraphic");
+
+      form.addEventListener('submit', function() {
+        overlay.classList.add('active')
+      });
+    </script>
 </body>
 </html>

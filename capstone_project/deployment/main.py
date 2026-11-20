@@ -18,6 +18,7 @@ import re
 from openai import OpenAI
 import google.generativeai as genai
 
+import time
 import io
 import json
 import numpy as np
@@ -703,6 +704,9 @@ def chatgpt_api_supplies_leading_question(problem_df, student_answer, student_re
                                        input=leading_question_prompt
                                       )
     response_output = local_response.output_text
+
+  elif DEBUG_LEVEL > 0 and DEBUG_LEVEL < EVALUATION_DEBUG_LEVEL:
+    time.sleep(5)
 
   chatgpt_feedback_list = re.split(r'[0-9]+\.[ \t]+', response_output)
   if len(chatgpt_feedback_list) > 0:
