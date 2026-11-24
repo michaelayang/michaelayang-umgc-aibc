@@ -16,7 +16,5 @@ VAGUE_WRONG_REASONING = "dunno"
 CONTROL_RUN = False
 
 math_string_dfs = []
-chatgpt_output_correlation_vector = np.array([0, 0, 0])
-perfect_correlation_vector = np.array([0, 0, 0])
 
 
