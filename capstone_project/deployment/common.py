@@ -1,5 +1,3 @@
-import numpy as np
-
 CONNECT_TO_CHATGPT_API = True
 CONNECT_TO_GEMINI_API = False
 GEMINI_MODEL_NAME = "gemini-3.6-flash"

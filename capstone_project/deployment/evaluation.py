@@ -5,6 +5,10 @@ from utilities import justify_current_problem_solution_with_answers_to_previous_
     ask_gemini_to_correlate_phrases_in_a_0_to_10_ranking, student_reasoning_is_relevant_to_problem
 import llm_interfaces
 
+import numpy as np
+import pandas as pd
+
+
 def execute_evaluation(math_string_dfs):
 
   chatgpt_output_correlation_vector = np.array([0, 0, 0])
