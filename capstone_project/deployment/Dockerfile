@@ -28,11 +28,16 @@ RUN ngrok http 8080 --url https://unsold-bolster-wildcat.ngrok-free.dev --poolin
 
 # Copy the rest of the backend application code into the container at /app
 COPY main.py /app/.
+COPY common.py  /app/.
+COPY evaluation.py  /app/.
+COPY flask_state_machine.py  /app/.
+COPY llm_interfaces.py  /app/.
+COPY utilities.py /app/.
 COPY templates/index.html templates/.
 COPY static/styles.css static/.
+COPY static/arithmetic-symbols-spinner.png static/.
 COPY MYangAICapstoneProjectUMGCPrototypeInput.json .
 COPY MYangAICapstoneProjectUMGCForEvaluationString5.json .
-COPY static/arithmetic-symbols-spinner.png static/.
 
 # Make port 5000 available to the world outside this container
 EXPOSE 5000

@@ -1,0 +1,22 @@
+import numpy as np
+
+CONNECT_TO_CHATGPT_API = True
+CONNECT_TO_GEMINI_API = False
+GEMINI_MODEL_NAME = "gemini-3.6-flash"
+GEMINI_TEMPERATURE = 0.9
+GEMINI_TOP_P = 0.95
+GEMINI_TOP_K = 40
+GEMINI_MAX_TOKENS = 2048
+GEMINI_TIMEOUT = 30
+REASONING_THRESHOLD = 0.70
+EVALUATION_DEBUG_LEVEL = 2
+DEBUG_LEVEL = 1 # EVALUATION_DEBUG_LEVEL
+VAGUE_WRONG_ANSWER = "dunno"
+VAGUE_WRONG_REASONING = "dunno"
+CONTROL_RUN = False
+
+math_string_dfs = []
+chatgpt_output_correlation_vector = np.array([0, 0, 0])
+perfect_correlation_vector = np.array([0, 0, 0])
+
+
